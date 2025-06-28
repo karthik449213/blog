@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
+import { useEffect } from "react";
 import type { Post } from "@shared/schema";
 import MarkdownRenderer from "@/components/markdown-renderer";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,7 +12,7 @@ export default function BlogDetail() {
   const { id } = useParams();
   
   const { data: post, isLoading, error } = useQuery<Post>({
-    queryKey: ["/api/posts", id],
+    queryKey: [`/api/posts/${id}`],
     enabled: !!id,
   });
 
@@ -42,6 +43,24 @@ export default function BlogDetail() {
   ).slice(0, 2) || [];
 
   const readingTime = Math.ceil((post?.content.length || 0) / 200);
+
+  // Update page title for SEO
+  useEffect(() => {
+    if (post) {
+      document.title = `${post.title} | ModernBlog`;
+      
+      // Update meta description
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        const excerpt = post.content.substring(0, 150).replace(/[#*`]/g, '');
+        metaDescription.setAttribute('content', excerpt + '...');
+      }
+    }
+    
+    return () => {
+      document.title = 'ModernBlog - Professional Blog Platform';
+    };
+  }, [post]);
 
   return (
     <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
