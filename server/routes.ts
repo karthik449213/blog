@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertPostSchema } from "@shared/schema";
@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Get all posts
-  app.get("/api/posts", async (req, res) => {
+  app.get("/api/posts", async (_req: Request, res: Response) => {
     try {
       const posts = await storage.getAllPosts();
       res.json(posts);
@@ -17,7 +17,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get single post by ID
-  app.get("/api/posts/:id", async (req, res) => {
+  app.get("/api/posts/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -37,11 +37,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create new post
-  app.post("/api/posts", async (req, res) => {
+  app.post("/api/posts", async (req: Request, res: Response) => {
     try {
       const validatedData = insertPostSchema.parse(req.body);
       const post = await storage.createPost(validatedData);
-      res.status(201).json(post);
+      res.status(201)
+        .location(`/api/posts/${post.id}`)
+        .json(post);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
@@ -55,7 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update post
-  app.put("/api/posts/:id", async (req, res) => {
+  app.put("/api/posts/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -83,7 +85,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Delete post
-  app.delete("/api/posts/:id", async (req, res) => {
+  app.delete("/api/posts/:id", async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
@@ -95,7 +97,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Post not found" });
       }
 
-      res.status(204).send();
+      res.status(204).json({ message: "Post deleted" });
     } catch (error) {
       console.error("Error deleting post:", error);
       res.status(500).json({ message: "Failed to delete post" });
