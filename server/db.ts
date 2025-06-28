@@ -19,9 +19,11 @@ if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL.includes('
 }
 
 // Configure SSL for production (required for most cloud databases)
+// Also enable SSL for Render databases even in development
+const isRenderDatabase = process.env.DATABASE_URL?.includes('render.com');
 const poolConfig = {
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: (process.env.NODE_ENV === 'production' || isRenderDatabase) ? { rejectUnauthorized: false } : false
 };
 
 export const pool = new Pool(poolConfig);

@@ -10,5 +10,13 @@ export default defineConfig({
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+    connectionTimeoutMillis: 30000,
+    idleTimeoutMillis: 30000,
+    max: 1,
   },
+  verbose: true,
+  strict: true,
 });
