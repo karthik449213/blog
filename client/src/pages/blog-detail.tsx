@@ -7,17 +7,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Calendar, Clock, Heart, Bookmark, Share2 } from "lucide-react";
 import { formatDistance } from "date-fns";
-
+const API_URL = import.meta.env.VITE_API_URL; 
 export default function BlogDetail() {
   const { id } = useParams();
   
   const { data: post, isLoading, error } = useQuery<Post>({
-    queryKey: [`/api/posts/${id}`],
+    queryKey: [`${API_URL}/api/posts/${id}`],
     enabled: !!id,
   });
 
   const { data: allPosts } = useQuery<Post[]>({
-    queryKey: ["/api/posts"],
+    queryKey: [`${API_URL}/api/posts`],
   });
 
   if (error) {
