@@ -5,7 +5,8 @@ import type { Post } from "@shared/schema";
 import BlogCard from "@/components/blog-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = fetch(`${import.meta.env.VITE_API_URL}`);
+
 export default function Categories() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
